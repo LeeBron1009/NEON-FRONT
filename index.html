@@ -3,297 +3,146 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>NEON FRONT｜霓虹防線</title>
+<title>NEON FRONT｜霓虹球場</title>
 <style>
-*{box-sizing:border-box;user-select:none;-webkit-tap-highlight-color:transparent}
-:root{--c:#00e5ff;--p:#b04dff;--bg:#070b18;--card:#101830}
-body{margin:0;background:radial-gradient(circle at 50% 0,#14204a,#070b18 70%);color:#e8f4ff;font-family:"Noto Sans TC",system-ui,sans-serif;min-height:100vh}
-.screen{display:none;max-width:980px;margin:0 auto;padding:16px}
+*{box-sizing:border-box;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
+:root{--c:#00e5ff;--p:#b04dff;--g:#ffd54a;--card:#101830;--line:#1f3a66}
+html,body{margin:0;min-height:100%}
+body{background:radial-gradient(circle at 50% 0,#14204a,#070b18 70%);color:#e8f4ff;font-family:"Noto Sans TC",system-ui,sans-serif}
+.screen{display:none;max-width:1000px;margin:0 auto;padding:16px}
 .screen.on{display:block}
-h1{font-size:clamp(32px,8vw,64px);margin:30px 0 4px;text-align:center;letter-spacing:4px;background:linear-gradient(90deg,var(--c),var(--p));-webkit-background-clip:text;color:transparent;text-shadow:0 0 30px #00e5ff55}
-.sub{text-align:center;color:#7fa6c9;margin-bottom:30px;letter-spacing:6px}
-.btn{background:linear-gradient(135deg,#0a2a44,#1b1050);border:1px solid var(--c);color:#fff;padding:12px 22px;border-radius:12px;font-size:16px;cursor:pointer;box-shadow:0 0 14px #00e5ff44;transition:.15s}
+h1{font-size:clamp(34px,8vw,68px);margin:34px 0 4px;text-align:center;letter-spacing:4px;background:linear-gradient(90deg,var(--c),var(--p));-webkit-background-clip:text;color:transparent}
+.sub{text-align:center;color:#7fa6c9;margin-bottom:28px;letter-spacing:6px}
+.btn{background:linear-gradient(135deg,#0a2a44,#1b1050);border:1px solid var(--c);color:#fff;padding:12px 24px;border-radius:12px;font-size:16px;cursor:pointer;box-shadow:0 0 14px #00e5ff44;transition:.15s;font-family:inherit}
 .btn:hover{box-shadow:0 0 24px #00e5ffaa;transform:translateY(-2px)}
-.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.btn.big{padding:16px 40px;font-size:20px;min-width:260px}
 .center{display:flex;flex-direction:column;align-items:center;gap:14px}
-.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-.map{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
-.stage{background:var(--card);border:1px solid #1f3a66;border-radius:16px;padding:16px;cursor:pointer;position:relative;overflow:hidden;transition:.15s}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.map{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.stage{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;cursor:pointer;position:relative;overflow:hidden;transition:.15s}
 .stage:hover{border-color:var(--c);box-shadow:0 0 20px #00e5ff55;transform:translateY(-3px)}
 .stage.lock{opacity:.35;pointer-events:none}
-.stage b{font-size:18px}.stage small{color:#7fa6c9;display:block;margin-top:6px}
-.stage .no{position:absolute;right:12px;top:4px;font-size:54px;font-weight:900;color:#ffffff10}
-.star{color:#ffd54a}
-#game{padding:6px}
-#hud{position:relative}
-canvas{width:100%;display:block;border-radius:14px;border:1px solid #1f3a66;background:#000;box-shadow:0 0 30px #00e5ff22}
-#money{position:absolute;right:12px;top:8px;font-size:clamp(16px,3vw,28px);font-weight:800;color:#ffd54a;text-shadow:0 0 10px #ffb300;pointer-events:none}
-#tools{position:absolute;left:10px;top:8px;display:flex;gap:6px}
-#tools button{background:#0008;border:1px solid var(--c);color:#fff;border-radius:8px;padding:4px 10px;cursor:pointer}
-#panel{display:grid;grid-template-columns:130px 1fr;gap:8px;margin-top:8px}
-#side{display:flex;flex-direction:column;gap:8px}
-.sbtn{flex:1;border-radius:12px;border:1px solid var(--c);background:linear-gradient(160deg,#08324a,#150a3a);color:#fff;cursor:pointer;font-weight:700;font-size:13px;padding:6px;position:relative;overflow:hidden}
-.sbtn:disabled{opacity:.45}
-#cannon .fill{position:absolute;left:0;bottom:0;width:100%;background:#00e5ff55;height:0}
-#cannon.ready{box-shadow:0 0 20px #00e5ff;animation:pl 1s infinite}
-@keyframes pl{50%{box-shadow:0 0 4px #00e5ff}}
-#units{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
-.u{position:relative;aspect-ratio:1/0.95;border-radius:12px;border:1px solid #2a4a7a;background:linear-gradient(160deg,#112042,#0a1030);color:#fff;cursor:pointer;overflow:hidden;padding:2px}
-.u .e{font-size:clamp(20px,4.5vw,36px);display:block}
-.u .n{font-size:clamp(9px,1.6vw,12px);display:block;white-space:nowrap}
-.u .c{font-size:clamp(10px,1.8vw,13px);color:#ffd54a;font-weight:800}
-.u.can{border-color:var(--c);box-shadow:0 0 10px #00e5ff66}
-.u .cd{position:absolute;left:0;bottom:0;width:100%;background:#000a;height:0}
-.u .k{position:absolute;left:3px;top:1px;font-size:10px;color:#7fa6c9}
-#end{position:fixed;inset:0;background:#000c;display:none;align-items:center;justify-content:center;z-index:9}
-#end.on{display:flex}
-#end .box{background:var(--card);border:1px solid var(--c);border-radius:20px;padding:30px 40px;text-align:center;box-shadow:0 0 40px #00e5ff55}
-#end h2{font-size:42px;margin:0 0 14px}
-.dex{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
-.dex div{background:var(--card);border:1px solid #1f3a66;border-radius:12px;padding:10px;font-size:13px;color:#9fc2e0}
+.stage b{font-size:18px}
+.stage small{color:#7fa6c9;display:block;margin-top:6px}
+.stage .no{position:absolute;right:12px;top:2px;font-size:56px;font-weight:900;color:#ffffff10}
+.stage .row{display:flex;gap:2px;margin-top:8px;flex-wrap:wrap}
+.star{color:var(--g)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px}
+.pc{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 4px;text-align:center;cursor:pointer;position:relative;transition:.15s}
+.pc:hover{border-color:var(--c)}
+.pc.sel{border-color:var(--g);box-shadow:0 0 14px #ffd54a88}
+.pc .nm{font-size:13px;display:block;margin-top:2px}
+.cost{position:absolute;left:4px;top:4px;width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#c040ff,#7a1fd0);border:2px solid #fff;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 8px #c040ff}
+.slots{display:grid;grid-template-columns:repeat(8,1fr);gap:6px;margin-bottom:10px}
+.slot{aspect-ratio:1;border:1px dashed var(--line);border-radius:10px;display:flex;align-items:center;justify-content:center;position:relative;cursor:pointer}
+.info{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin-bottom:12px;color:#9fc2e0;font-size:14px}
+.dex{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.dex>div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px;font-size:13px;color:#9fc2e0;display:flex;gap:10px;align-items:center}
 .dex b{color:#fff;font-size:15px}
-@media(max-width:600px){#panel{grid-template-columns:90px 1fr}}
+/* ===== 戰鬥畫面 ===== */
+#game.screen{max-width:none;padding:0}
+#gwrap{height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:6px}
+#fieldBox{position:relative;width:min(100%,calc((100vh - 176px)*2))}
+#cv{width:100%;aspect-ratio:2/1;display:block;border-radius:14px;border:1px solid var(--line);background:#000;box-shadow:0 0 30px #00e5ff22;touch-action:none}
+#hudTop{position:absolute;left:0;right:0;top:8px;display:flex;justify-content:center;gap:14px;pointer-events:none;font-weight:800}
+#hudTop div{background:#000a;border:1px solid var(--c);border-radius:10px;padding:4px 14px;font-size:clamp(13px,2vw,22px)}
+#tools{position:absolute;left:10px;top:8px;display:flex;gap:6px}
+#tools button{background:#000a;border:1px solid var(--c);color:#fff;border-radius:8px;padding:4px 10px;cursor:pointer}
+#bar{width:min(100%,calc((100vh - 176px)*2));height:160px;display:flex;gap:10px;align-items:stretch}
+#laserBox{width:130px}
+#laserBtn{width:100%;height:100%;border-radius:14px;border:1px solid var(--c);background:linear-gradient(160deg,#08324a,#150a3a);color:#fff;font-weight:700;cursor:pointer;position:relative;overflow:hidden;touch-action:none}
+#laserBtn .fill{position:absolute;left:0;bottom:0;width:100%;height:0;background:#00e5ff55}
+#laserBtn.ready{box-shadow:0 0 22px #00e5ff;animation:pl 1s infinite}
+#laserBtn span{position:relative;font-size:14px}
+@keyframes pl{50%{box-shadow:0 0 4px #00e5ff}}
+#center{flex:1;display:flex;flex-direction:column;gap:6px;min-width:0}
+#elixWrap{height:24px;background:#1a0b33;border:1px solid #7a1fd0;border-radius:12px;position:relative;overflow:hidden}
+#elixFill{height:100%;width:50%;background:linear-gradient(90deg,#c040ff,#ff6bd6);box-shadow:0 0 12px #c040ff}
+#elixNum{position:absolute;left:10px;top:0;line-height:22px;font-weight:800;font-size:14px}
+#hand{flex:1;display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.card{position:relative;border-radius:12px;border:1px solid #2a4a7a;background:linear-gradient(160deg,#112042,#0a1030);color:#fff;cursor:grab;display:flex;flex-direction:column;align-items:center;justify-content:center;touch-action:none;overflow:hidden}
+.card .n{font-size:12px}
+.card.can{border-color:var(--c);box-shadow:0 0 12px #00e5ff77}
+.card.no{filter:grayscale(.7) brightness(.6)}
+.card.drag{opacity:.4}
+#nextBox{width:84px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#7fa6c9;font-size:12px;gap:4px}
+#ghost{position:fixed;pointer-events:none;z-index:20;display:none;transform:translate(-50%,-50%)}
+#end{position:fixed;inset:0;background:#000c;display:none;align-items:center;justify-content:center;z-index:30}
+#end.on{display:flex}
+#end .box{background:var(--card);border:1px solid var(--c);border-radius:20px;padding:30px 44px;text-align:center;box-shadow:0 0 40px #00e5ff55}
+#end h2{font-size:42px;margin:0 0 12px}
+#end p{color:#9fc2e0;line-height:1.7}
+@media(max-width:700px){#laserBox{width:84px}#nextBox{display:none}}
 </style>
 </head>
 <body>
 
 <div id="title" class="screen on">
-  <h1>NEON FRONT</h1>
-  <div class="sub">霓 虹 防 線</div>
+  <h1>NEON FRONT 2</h1>
+  <div class="sub">霓 虹 球 場</div>
   <div class="center">
-    <button class="btn" onclick="show('stages')">▶ 開始遊戲</button>
-    <button class="btn" onclick="show('dex')">📘 角色圖鑑</button>
-    <button class="btn" onclick="if(confirm('確定清除進度?')){localStorage.removeItem('nf_save');save=load();alert('已清除')}">🗑 清除進度</button>
+    <button class="btn big" onclick="show('modes')">▶ 開始遊戲</button>
+    <button class="btn big" onclick="show('deck')">🃏 編輯牌組</button>
+    <button class="btn big" onclick="show('dex')">📘 角色圖鑑</button>
+    <button class="btn" onclick="resetSave()">🗑 清除進度</button>
+  </div>
+</div>
+
+<div id="modes" class="screen">
+  <div class="top"><button class="btn" onclick="show('title')">← 返回</button><b>選擇模式</b><span></span></div>
+  <div class="center">
+    <button class="btn big" onclick="show('stages')">🏟 闖關模式(8 關)</button>
+    <button class="btn big" onclick="goEndless()">♾ 無盡模式<br><small id="bestTxt"></small></button>
   </div>
 </div>
 
 <div id="stages" class="screen">
-  <div class="top"><button class="btn" onclick="show('title')">← 返回</button><b>🌐 選擇關卡</b><span></span></div>
+  <div class="top"><button class="btn" onclick="show('modes')">← 返回</button><b>🌐 闖關地圖</b><span></span></div>
   <div class="map" id="map"></div>
+</div>
+
+<div id="deck" class="screen">
+  <div class="top"><button class="btn" onclick="show('title')">← 返回</button><b>🃏 牌組(選 8 張)</b><span></span></div>
+  <div class="slots" id="slots"></div>
+  <div class="info" id="deckInfo"></div>
+  <div class="grid" id="pool"></div>
 </div>
 
 <div id="dex" class="screen">
   <div class="top"><button class="btn" onclick="show('title')">← 返回</button><b>📘 圖鑑</b><span></span></div>
   <h3>我方部隊</h3><div class="dex" id="dexU"></div>
-  <h3>敵方入侵者</h3><div class="dex" id="dexE"></div>
+  <h3>敵方專屬</h3><div class="dex" id="dexE"></div>
 </div>
 
 <div id="game" class="screen">
-  <div id="hud">
-    <canvas id="cv" width="1200" height="420"></canvas>
-    <div id="tools"><button onclick="paused=!paused">⏸</button><button onclick="speed=speed==1?2:1;this.textContent=speed==1?'x1':'x2'">x1</button><button onclick="quit()">✖</button></div>
-    <div id="money"></div>
-  </div>
-  <div id="panel">
-    <div id="side">
-      <button class="sbtn" id="wallet" onclick="upWallet()"></button>
-      <button class="sbtn" id="cannon" onclick="fire()"><div class="fill"></div><span style="position:relative">⚡ 雷射砲</span></button>
+  <div id="gwrap">
+    <div id="fieldBox">
+      <canvas id="cv" width="1200" height="600"></canvas>
+      <div id="hudTop"><div id="hTimer">3:00</div><div id="hScore"></div><div id="hCrown"></div></div>
+      <div id="tools">
+        <button id="bPause">⏸</button><button id="bSpeed">x1</button><button id="bQuit">✖</button>
+      </div>
     </div>
-    <div id="units"></div>
+    <div id="bar">
+      <div id="laserBox"><button id="laserBtn"><div class="fill"></div><span>⚡ 雷射砲<br><small>按住拖曳瞄準</small></span></button></div>
+      <div id="center">
+        <div id="elixWrap"><div id="elixFill"></div><span id="elixNum">5</span></div>
+        <div id="hand"></div>
+      </div>
+      <div id="nextBox"><span>下一張</span><div id="nextCard"></div></div>
+    </div>
   </div>
+  <div id="ghost"></div>
 </div>
 
 <div id="end"><div class="box"><h2 id="endT"></h2><p id="endP"></p>
-<button class="btn" onclick="show('stages')">回到地圖</button></div></div>
+<button class="btn" onclick="show('modes')">回到選單</button></div></div>
 
-<script>
-/* ===== 資料 ===== */
-const W=1200,H=420,GY=350;
-// 我方 (playerBase 在右邊, 往左走)
-const UNITS=[
- {id:'nano',  n:'奈米球',   e:'🔵',col:'#4dd0ff',cost:50,  cd:2,  hp:300, atk:8,  rng:50, spd:60, ai:0.9,sz:20,area:0},
- {id:'blade', n:'光刃兵',   e:'⚔️',col:'#7cffb2',cost:100, cd:3,  hp:500, atk:40, rng:60, spd:55, ai:1.0,sz:22,area:0},
- {id:'drone', n:'無人機',   e:'🛸',col:'#ffe066',cost:200, cd:5,  hp:350, atk:60, rng:200,spd:70, ai:1.4,sz:22,area:0},
- {id:'mech',  n:'重裝機甲', e:'🤖',col:'#ff9e57',cost:300, cd:8,  hp:2600,atk:70, rng:70, spd:40, ai:1.6,sz:30,area:0},
- {id:'rail',  n:'磁軌炮手', e:'🎯',col:'#ff6b9a',cost:400, cd:10, hp:700, atk:180,rng:300,spd:45, ai:2.2,sz:24,area:0},
- {id:'quant', n:'量子術士', e:'🔮',col:'#c58bff',cost:500, cd:12, hp:900, atk:110,rng:180,spd:45, ai:2.0,sz:24,area:110},
- {id:'bike',  n:'閃電摩托', e:'🏍️',col:'#ffee58',cost:350, cd:7,  hp:800, atk:90, rng:65, spd:130,ai:0.8,sz:24,area:0},
- {id:'giant', n:'護盾巨像', e:'🛡️',col:'#80cbc4',cost:600, cd:15, hp:6500,atk:100,rng:75, spd:30, ai:2.2,sz:36,area:0},
- {id:'orbit', n:'軌道衛星', e:'🛰️',col:'#f48fb1',cost:900, cd:20, hp:1500,atk:400,rng:380,spd:40, ai:3.0,sz:28,area:90},
- {id:'core',  n:'星核之神', e:'🌟',col:'#fff176',cost:1500,cd:40, hp:9000,atk:900,rng:260,spd:50, ai:2.8,sz:42,area:140}
-];
-// 敵方 (從左邊出現, 往右走)
-const ENEMIES={
- virus:{n:'病毒粒子',e:'🦠',col:'#76ff03',hp:250, atk:12, rng:45, spd:45, ai:1.2,sz:20,area:0,drop:20},
- bug:  {n:'程式蟲',  e:'🐛',col:'#ffab40',hp:600, atk:30, rng:50, spd:60, ai:1.0,sz:22,area:0,drop:40},
- spider:{n:'駭客蜘蛛',e:'🕷️',col:'#ff5252',hp:1400,atk:70, rng:70, spd:55, ai:1.5,sz:26,area:0,drop:80},
- turret:{n:'故障砲台',e:'📡',col:'#ea80fc',hp:1200,atk:90, rng:260,spd:30, ai:2.5,sz:26,area:0,drop:120},
- tank: {n:'暗黑戰車',e:'🚜',col:'#90a4ae',hp:5000,atk:150,rng:70, spd:35, ai:2.0,sz:34,area:0,drop:250},
- ghost:{n:'幽靈封包',e:'👻',col:'#b388ff',hp:2500,atk:120,rng:150,spd:70, ai:1.5,sz:26,area:100,drop:200},
- boss: {n:'AI 核心',  e:'👁️',col:'#ff1744',hp:30000,atk:500,rng:120,spd:25,ai:2.5,sz:52,area:130,drop:2000}
-};
-const STAGES=[
- {n:'數據荒原',d:'病毒開始入侵',bg:['#0b1a3a','#0e3a5a'],hp:6000, w:[['virus',2,5],['bug',15,7],['virus',30,3]]},
- {n:'電路森林',d:'程式蟲大量出現',bg:['#06281f','#0d4a3a'],hp:12000,w:[['virus',1,4],['bug',10,6],['spider',50,25],['bug',60,4]]},
- {n:'霓虹都市',d:'小心遠程砲台',bg:['#2a0b3a','#4a1060'],hp:25000,w:[['bug',1,5],['turret',20,20],['spider',30,12],['virus',40,2]]},
- {n:'暗網深淵',d:'幽靈與戰車來襲',bg:['#12121f','#2a1a40'],hp:50000,w:[['spider',1,10],['ghost',25,18],['tank',60,45],['bug',40,3]]},
- {n:'核心伺服器',d:'最終戰: AI 核心',bg:['#3a0a14','#14041f'],hp:90000,w:[['ghost',1,12],['tank',30,30],['turret',20,15],['spider',10,8],['boss',90,999]]}
-];
-
-/* ===== 存檔 ===== */
-function load(){try{return JSON.parse(localStorage.getItem('nf_save'))||{clear:0}}catch(e){return{clear:0}}}
-let save=load();
-function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));document.getElementById(id).classList.add('on');document.getElementById('end').classList.remove('on');if(id=='stages')buildMap()}
-function buildMap(){
- const m=document.getElementById('map');m.innerHTML='';
- STAGES.forEach((s,i)=>{
-  const d=document.createElement('div');d.className='stage'+(i>save.clear?' lock':'');
-  d.innerHTML=`<div class="no">${i+1}</div><b>${s.n}</b><small>${s.d}</small><small>基地 HP ${s.hp.toLocaleString()} ${i<save.clear?'<span class="star">★ 已通關</span>':''}</small>`;
-  d.onclick=()=>start(i);m.appendChild(d)});
-}
-// 圖鑑
-document.getElementById('dexU').innerHTML=UNITS.map(u=>`<div><b>${u.e} ${u.n}</b><br>花費 ${u.cost}｜HP ${u.hp}<br>攻擊 ${u.atk}｜射程 ${u.rng}${u.area?'｜範圍':''}</div>`).join('');
-document.getElementById('dexE').innerHTML=Object.values(ENEMIES).map(u=>`<div><b>${u.e} ${u.n}</b><br>HP ${u.hp}｜攻擊 ${u.atk}<br>射程 ${u.rng}${u.area?'｜範圍':''}</div>`).join('');
-
-/* ===== 戰鬥 ===== */
-const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
-let G=null,paused=false,speed=1,last=0,raf;
-const $=id=>document.getElementById(id);
-
-function start(i){
- const st=STAGES[i];
- G={i,st,t:0,money:0,wl:1,ents:[],fx:[],cdT:UNITS.map(()=>0),
-    eBase:{hp:st.hp,max:st.hp,x:70},pBase:{hp:8000,max:8000,x:W-70},
-    charge:0,spawn:st.w.map(w=>({id:w[0],next:w[1],every:w[2]})),over:false};
- paused=false;speed=1;show('game');
- $('units').innerHTML=UNITS.map((u,k)=>`<button class="u" id="u${k}" onclick="deploy(${k})"><span class="k">${(k+1)%10}</span><span class="e">${u.e}</span><span class="n">${u.n}</span><span class="c">${u.cost}</span><div class="cd"></div></button>`).join('');
- last=performance.now();cancelAnimationFrame(raf);raf=requestAnimationFrame(loop);
-}
-function quit(){cancelAnimationFrame(raf);G=null;show('stages')}
-const maxMoney=()=>300+G.wl*200, rate=()=>20+G.wl*10, upCost=()=>Math.round(80*G.wl*1.2*G.wl**0.3)*1+40*G.wl;
-function upWallet(){if(!G||G.wl>=8)return;const c=upCost();if(G.money>=c){G.money-=c;G.wl++}}
-function deploy(k){
- if(!G||G.over||paused)return;const u=UNITS[k];
- if(G.money<u.cost||G.cdT[k]>0)return;
- G.money-=u.cost;G.cdT[k]=u.cd;
- G.ents.push(mk('p',u,G.pBase.x-30));
-}
-function mk(team,d,x){const hpMul=team=='e'?(1+G.i*0.15):1;
- return{team,d,x,hp:d.hp*hpMul,max:d.hp*hpMul,cd:0,kb:0,kbN:0,bob:Math.random()*6}}
-function fire(){
- if(!G||G.charge<1||G.over)return;G.charge=0;G.fx.push({type:'beam',t:0});
- G.ents.filter(e=>e.team=='e').forEach(e=>{hit(e,1200);e.kb=0.5});
-}
-function hit(t,dmg){
- t.hp-=dmg;const before=t.kbN,third=t.max/3;
- const n=Math.floor((t.max-Math.max(t.hp,0))/third);
- if(n>t.kbN&&t.hp>0){t.kbN=n;t.kb=0.35}
- G.fx.push({type:'dmg',x:t.x,y:GY-t.d.sz*2,v:Math.round(dmg),t:0});
-}
-document.addEventListener('keydown',e=>{if(!G)return;const k=e.key==='0'?9:parseInt(e.key)-1;if(k>=0&&k<10)deploy(k);if(e.key==' ')fire()});
-
-function update(dt){
- if(paused||G.over)return;
- G.t+=dt;
- G.money=Math.min(maxMoney(),G.money+rate()*dt);
- G.charge=Math.min(1,G.charge+dt/35);
- G.cdT=G.cdT.map(c=>Math.max(0,c-dt));
- // 敵人生成
- G.spawn.forEach(s=>{
-  if(G.t>=s.next){
-   if(s.id!='boss'||!G.ents.some(e=>e.d===ENEMIES.boss)){G.ents.push(mk('e',ENEMIES[s.id],G.eBase.x+30));}
-   s.next+=s.every*(0.85+Math.random()*0.3);
-   if(s.id=='boss')s.next=1e9;
-  }});
- // 實體
- for(const e of G.ents){
-  const d=e.d,dir=e.team=='p'?-1:1;
-  if(e.kb>0){e.kb-=dt;e.x-=dir*220*dt;e.cd=Math.max(e.cd,0.3);continue}
-  e.cd-=dt;
-  const foes=G.ents.filter(o=>o.team!=e.team&&o.hp>0);
-  let tgt=null,best=1e9;
-  for(const o of foes){const dist=(o.x-e.x)*dir-(o.d.sz*0.5);if(dist<=d.rng&&dist>-80&&dist<best){best=dist;tgt=o}}
-  const base=e.team=='p'?G.eBase:G.pBase;
-  const bd=(base.x-e.x)*dir-30;
-  if(tgt||bd<=d.rng){
-   if(e.cd<=0){
-    e.cd=d.ai;const dm=d.atk;
-    if(tgt){
-     if(d.area){foes.forEach(o=>{if(Math.abs(o.x-tgt.x)<=d.area)hit(o,dm)})}
-     else hit(tgt,dm);
-     G.fx.push({type:'shot',x1:e.x,x2:tgt.x,col:d.col,t:0});
-    }else{base.hp-=dm;G.fx.push({type:'shot',x1:e.x,x2:base.x,col:d.col,t:0});
-     G.fx.push({type:'dmg',x:base.x,y:GY-90,v:Math.round(dm),t:0})}
-   }
-  }else e.x+=dir*d.spd*dt;
- }
- // 死亡
- for(const e of G.ents){if(e.hp<=0){G.fx.push({type:'boom',x:e.x,y:GY-e.d.sz,col:e.d.col,t:0});if(e.team=='e')G.money=Math.min(maxMoney(),G.money+e.d.drop*0.5)}}
- G.ents=G.ents.filter(e=>e.hp>0);
- G.fx.forEach(f=>f.t+=dt);G.fx=G.fx.filter(f=>f.t<(f.type=='beam'?0.8:f.type=='shot'?0.12:0.7));
- if(G.eBase.hp<=0)finish(true);
- if(G.pBase.hp<=0)finish(false);
-}
-function finish(win){
- G.over=true;
- if(win&&G.i>=save.clear){save.clear=G.i+1;localStorage.setItem('nf_save',JSON.stringify(save))}
- setTimeout(()=>{$('endT').textContent=win?'🏆 任務成功':'💥 任務失敗';
-  $('endT').style.color=win?'#7cffb2':'#ff5c7a';
-  $('endP').textContent=win?(G.i+1<STAGES.length?'下一關已解鎖!':'你已守住所有防線!'):'基地被摧毀了,再試一次吧。';
-  $('end').classList.add('on')},900);
-}
-
-/* ===== 繪圖 ===== */
-function draw(){
- const st=G.st;
- const g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,st.bg[0]);g.addColorStop(1,st.bg[1]);
- ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
- // 網格
- ctx.strokeStyle='#ffffff0d';ctx.lineWidth=1;
- for(let x=0;x<W;x+=60){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,GY);ctx.stroke()}
- for(let y=0;y<GY;y+=40){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke()}
- // 遠景大樓
- ctx.fillStyle='#ffffff08';for(let i=0;i<14;i++){const h=60+((i*53)%110);ctx.fillRect(i*90+10,GY-h,50,h)}
- // 地面
- ctx.fillStyle='#050a18';ctx.fillRect(0,GY,W,H-GY);
- ctx.strokeStyle='#00e5ff';ctx.shadowColor='#00e5ff';ctx.shadowBlur=14;ctx.lineWidth=2;
- ctx.beginPath();ctx.moveTo(0,GY);ctx.lineTo(W,GY);ctx.stroke();ctx.shadowBlur=0;
- // 基地
- base(G.eBase,'#ff1744','🏭');base(G.pBase,'#00e5ff','🏰');
- // 單位
- const sorted=[...G.ents].sort((a,b)=>a.d.sz-b.d.sz);
- for(const e of sorted)unit(e);
- // 特效
- for(const f of G.fx){
-  if(f.type=='shot'){ctx.strokeStyle=f.col;ctx.lineWidth=3;ctx.shadowColor=f.col;ctx.shadowBlur=10;ctx.beginPath();ctx.moveTo(f.x1,GY-25);ctx.lineTo(f.x2,GY-25);ctx.stroke();ctx.shadowBlur=0}
-  if(f.type=='boom'){ctx.globalAlpha=1-f.t/0.7;ctx.strokeStyle=f.col;ctx.lineWidth=4;ctx.beginPath();ctx.arc(f.x,f.y,10+f.t*120,0,7);ctx.stroke();ctx.globalAlpha=1}
-  if(f.type=='dmg'){ctx.globalAlpha=1-f.t/0.7;ctx.fillStyle='#fff';ctx.font='bold 16px sans-serif';ctx.textAlign='center';ctx.fillText(f.v,f.x,f.y-f.t*40);ctx.globalAlpha=1}
-  if(f.type=='beam'){const a=1-f.t/0.8;ctx.fillStyle=`rgba(0,229,255,${a*0.5})`;ctx.fillRect(0,GY-120,W,120);ctx.fillStyle=`rgba(255,255,255,${a})`;ctx.fillRect(0,GY-70,W,20)}
- }
- // UI 更新
- $('money').textContent=`${Math.floor(G.money)} / ${maxMoney()} 💰`;
- const wl=$('wallet');wl.innerHTML=G.wl>=8?`錢包 Lv.MAX`:`💼 錢包 Lv.${G.wl}<br>升級 ${upCost()}`;wl.disabled=G.wl>=8||G.money<upCost();
- $('cannon').classList.toggle('ready',G.charge>=1);$('cannon').querySelector('.fill').style.height=G.charge*100+'%';
- UNITS.forEach((u,k)=>{const b=$('u'+k);b.classList.toggle('can',G.money>=u.cost&&G.cdT[k]<=0);b.querySelector('.cd').style.height=(G.cdT[k]/u.cd*100)+'%'});
-}
-function base(b,col,em){
- const x=b.x,w=70,h=150;
- ctx.fillStyle='#0a1228';ctx.strokeStyle=col;ctx.shadowColor=col;ctx.shadowBlur=16;ctx.lineWidth=3;
- ctx.fillRect(x-w/2,GY-h,w,h);ctx.strokeRect(x-w/2,GY-h,w,h);ctx.shadowBlur=0;
- ctx.font='44px serif';ctx.textAlign='center';ctx.fillText(em,x,GY-h/2+14);
- const bw=110,r=Math.max(0,b.hp/b.max);
- ctx.fillStyle='#000a';ctx.fillRect(x-bw/2,GY-h-22,bw,10);
- ctx.fillStyle=col;ctx.fillRect(x-bw/2,GY-h-22,bw*r,10);
- ctx.fillStyle='#fff';ctx.font='11px sans-serif';ctx.fillText(Math.max(0,Math.ceil(b.hp)),x,GY-h-28);
-}
-function unit(e){
- const d=e.d,s=d.sz,bob=Math.sin(G.t*8+e.bob)*2,y=GY-s-4+bob;
- ctx.shadowColor=d.col;ctx.shadowBlur=14;
- ctx.fillStyle='#0b1430';ctx.strokeStyle=d.col;ctx.lineWidth=3;
- ctx.beginPath();
- for(let i=0;i<6;i++){const a=Math.PI/3*i+Math.PI/6;ctx.lineTo(e.x+Math.cos(a)*s,y+Math.sin(a)*s)}
- ctx.closePath();ctx.fill();ctx.stroke();ctx.shadowBlur=0;
- ctx.font=`${s*1.1}px serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(d.e,e.x,y+2);ctx.textBaseline='alphabetic';
- const r=Math.max(0,e.hp/e.max);
- ctx.fillStyle='#000a';ctx.fillRect(e.x-s,y-s-10,s*2,5);
- ctx.fillStyle=e.team=='p'?'#00e5ff':'#ff5252';ctx.fillRect(e.x-s,y-s-10,s*2*r,5);
-}
-function loop(now){
- raf=requestAnimationFrame(loop);if(!G)return;
- let dt=Math.min(0.05,(now-last)/1000);last=now;
- for(let i=0;i<speed;i++)update(dt);
- draw();
-}
-</script>
+<!-- 載入順序不要改 -->
+<script src="data.js"></script>
+<script src="menu.js"></script>
+<script src="engine.js"></script>
+<script src="battle.js"></script>
 </body>
 </html>
